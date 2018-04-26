@@ -128,7 +128,7 @@ img {
 
     </style>
   </head>
-  <body style="text-align:center;">
+  <body id="body" style="text-align:center; display:none;">
     <h1 id="message" style="display:block">&nbsp;</h1>
 
     <p><small>N'hésitez pas à vous rendre sur <a href="https://www.bureauxapartager.com/coworking">bureauxapartager.com</a></small></p>
@@ -141,17 +141,17 @@ img {
       var plusOne = [];
       var minusOne = [];
 
-      function getQueryStringValue (key) {  
-          return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
-      } 
+      function getQueryStringValue (key) {
+          return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
+      }
 
       var today = new Date();
-      // Would write the value of the QueryString-variable called name to the console  
+      // Would write the value of the QueryString-variable called name to the console
       if (getQueryStringValue("today")) {
         today = new Date(getQueryStringValue("today"))
-      } 
+      }
 
-      function getValues(root, ) {
+      function getValues(root) {
         var feed = root.feed;
         var entries = feed.entry || [];
         var values = [];
@@ -164,33 +164,27 @@ img {
         return values;
       }
 
-      function fetchStrike(root) {
-        greves = getValues(root);
-        fetched++;
-        displayMessage();
-      }
-
-      function fetchNoStrike(root) {
-        merdes = getValues(root);
-        fetched++;
-        displayMessage();
-      }
-
       function fetchDays(root) {
         days = getValues(root);
-        fetched++;
-        displayMessage();
+        var sheet;
+
+        if (isItStrikeToday()) {
+          sheet = 2;
+        } else if (isItsTrikeTomorrow()) {
+          sheet = 3;
+        } else if (isItStrikeYesterday()) {
+          sheet = 4;
+        } else {
+          sheet = 5;
+        }
+
+        addScript('https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/' + sheet + '/public/values?alt=json-in-script&callback=displayMessage');
       }
 
-      function fetchPlusOne(root) {
-        plusOne = getValues(root);
-        fetched++;
-        displayMessage();
-      }
-      function fetchMinusOne(root) {
-        minusOne = getValues(root);
-        fetched++;
-        displayMessage();
+      function displayMessage(root) {
+        messages = getValues(root);
+        document.getElementById('message').innerHTML = messages[Math.floor(Math.random()*messages.length)];;
+        document.getElementById('body').style.display = 'block';
       }
 
       function isItStrikeToday() {
@@ -207,28 +201,12 @@ img {
         return days.indexOf(tomorrow) !== -1;
       }
 
-      function displayMessage() {
-        if (fetched !== 5) {
-          return;
-        }
-
-        var element = document.getElementById('message');
-
-        if (isItStrikeToday()) {
-          element.innerHTML = greves[Math.floor(Math.random()*greves.length)];
-        } else if (isItsTrikeTomorrow()) {
-          element.innerHTML = plusOne[Math.floor(Math.random()*plusOne.length)];;
-        } else if (isItStrikeYesterday()) {
-          element.innerHTML = minusOne[Math.floor(Math.random()*minusOne.length)];;
-        } else {
-          element.innerHTML = merdes[Math.floor(Math.random()*merdes.length)];;
-        }
+      function addScript( src ) {
+        var s = document.createElement( 'script' );
+        s.setAttribute( 'src', src );
+        document.body.appendChild( s );
       }
     </script>
     <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/1/public/values?alt=json-in-script&callback=fetchDays"></script>
-    <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/2/public/values?alt=json-in-script&callback=fetchStrike"></script>
-    <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/3/public/values?alt=json-in-script&callback=fetchNoStrike"></script>
-    <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/4/public/values?alt=json-in-script&callback=fetchPlusOne"></script>
-    <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/5/public/values?alt=json-in-script&callback=fetchMinusOne"></script>
   </body>
 </html>
