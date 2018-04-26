@@ -141,6 +141,16 @@ img {
       var plusOne = [];
       var minusOne = [];
 
+      function getQueryStringValue (key) {  
+          return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+      } 
+
+      var today = new Date();
+      // Would write the value of the QueryString-variable called name to the console  
+      if (getQueryStringValue("today")) {
+        today = new Date(getQueryStringValue("today"))
+      } 
+
       function getValues(root, ) {
         var feed = root.feed;
         var entries = feed.entry || [];
@@ -184,21 +194,16 @@ img {
       }
 
       function isItStrikeToday() {
-        var today = new Date().toJSON().slice(0,10);
-        return days.indexOf(today) !== -1;
+        return days.indexOf(today.toJSON().slice(0,10)) !== -1;
       }
 
       function isItStrikeYesterday() {
-        var today = new Date();
         var yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000)).toJSON().slice(0,10);
-
         return days.indexOf(yesterday) !== -1;
       }
 
       function isItsTrikeTomorrow() {
-        var today = new Date();
         var tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000)).toJSON().slice(0,10);
-
         return days.indexOf(tomorrow) !== -1;
       }
 
