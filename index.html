@@ -141,7 +141,10 @@ img {
       var greves  = [];
       var merdes  = [];
       var fetched = 0;
-      function getValues(root) {
+      var plusOne = [];
+      var minusOne = [];
+
+      function getValues(root, ) {
         var feed = root.feed;
         var entries = feed.entry || [];
         var values = [];
@@ -153,6 +156,7 @@ img {
 
         return values;
       }
+
       function fetchStrike(root) {
         greves = getValues(root);
         fetched++;
@@ -171,27 +175,58 @@ img {
         displayMessage();
       }
 
-      function displayMessage() {
-        if (fetched !== 3) {
-          return;
-        }
-
-        var element = document.getElementById('message');
-
-        if (isItStrikeToday()) {
-          element.innerHTML = 'c la greve : ' + greves[Math.floor(Math.random()*greves.length)];;
-        } else {
-          element.innerHTML = 'c la merde : ' + merdes[Math.floor(Math.random()*merdes.length)];;
-        }
+      function fetchPlusOne(root) {
+        plusOne = getValues(root);
+        fetched++;
+        displayMessage();
+      }
+      function fetchMinusOne(root) {
+        minusOne = getValues(root);
+        fetched++;
+        displayMessage();
       }
 
       function isItStrikeToday() {
         var today = new Date().toJSON().slice(0,10);
         return days.indexOf(today) !== -1;
       }
+
+      function isItStrikeYesterday() {
+        var today = new Date();
+        var yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000)).toJSON().slice(0,10);
+
+        return days.indexOf(yesterday) !== -1;
+      }
+
+      function isItsTrikeTomorrow() {
+        var today = new Date();
+        var tomorrow = new Date(today.getTime() + (24 * 60 * 60 * 1000)).toJSON().slice(0,10);
+
+        return days.indexOf(tomorrow) !== -1;
+      }
+
+      function displayMessage() {
+        if (fetched !== 5) {
+          return;
+        }
+
+        var element = document.getElementById('message');
+
+        if (isItStrikeToday()) {
+          element.innerHTML = greves[Math.floor(Math.random()*greves.length)];
+        } else if (isItsTrikeTomorrow()) {
+          element.innerHTML = plusOne[Math.floor(Math.random()*plusOne.length)];;
+        } else if (isItStrikeYesterday()) {
+          element.innerHTML = minusOne[Math.floor(Math.random()*minusOne.length)];;
+        } else {
+          element.innerHTML = merdes[Math.floor(Math.random()*merdes.length)];;
+        }
+      }
     </script>
     <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/1/public/values?alt=json-in-script&callback=fetchDays"></script>
     <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/2/public/values?alt=json-in-script&callback=fetchStrike"></script>
     <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/3/public/values?alt=json-in-script&callback=fetchNoStrike"></script>
+    <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/4/public/values?alt=json-in-script&callback=fetchPlusOne"></script>
+    <script src="https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/5/public/values?alt=json-in-script&callback=fetchMinusOne"></script>
   </body>
 </html>
