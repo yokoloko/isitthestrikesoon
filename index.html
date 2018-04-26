@@ -171,11 +171,11 @@ img {
         if (isItStrikeToday()) {
           sheet = 2;
         } else if (isItsTrikeTomorrow()) {
-          sheet = 3;
-        } else if (isItStrikeYesterday()) {
           sheet = 4;
-        } else {
+        } else if (isItStrikeYesterday()) {
           sheet = 5;
+        } else {
+          sheet = 3;
         }
 
         addScript('https://spreadsheets.google.com/feeds/cells/1Igfo8ToTdqz49s0fu5BDh2S6mlZg2Cofbmff3GYx3yw/' + sheet + '/public/values?alt=json-in-script&callback=displayMessage');
